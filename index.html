@@ -13,20 +13,32 @@
         .tooltip .tooltiptext { visibility: hidden; width: 200px; background-color: #555; color: #fff; text-align: center; border-radius: 6px; padding: 5px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -100px; opacity: 0; transition: opacity 0.3s; }
         .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
         .cost-section-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em; margin-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.25rem; }
+        @media print {
+            body { background: white; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            .result-card, .bg-white { box-shadow: none; border: 1px solid #eee; }
+            .page-break { page-break-before: always; }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen font-sans text-gray-900">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <header class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Financial Model: WEE Fund Budget Simulator</h1>
-            <p class="text-gray-600 mt-2">Simulate scenarios by adjusting partner counts, cost structures, and assumptions.</p>
+        <header class="mb-8 flex justify-between items-start">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Financial Model: WEE Fund Budget Simulator</h1>
+                <p class="text-gray-600 mt-2">Simulate scenarios by adjusting partner counts, cost structures, and assumptions.</p>
+            </div>
+            <button onclick="window.print()" class="no-print bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 font-medium text-sm">
+                Print Report
+            </button>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
             <!-- Sidebar: Controls -->
-            <div class="lg:col-span-4 space-y-6">
+            <div class="lg:col-span-4 space-y-6 no-print">
                 
                 <!-- Partner Counts -->
                 <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
@@ -84,7 +96,7 @@
                         
                         <!-- Group 1 Specific Costs -->
                         <div>
-                            <h3 class="cost-section-title">Group 1 Costs (Monitoring)</h3>
+                            <h3 class="cost-section-title">Group 1 Pricing (Revenue)</h3>
                             <div class="space-y-2">
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
@@ -119,7 +131,7 @@
 
                         <!-- Group 2 Specific Costs -->
                         <div>
-                            <h3 class="cost-section-title">Group 2 Costs (Decisioning)</h3>
+                            <h3 class="cost-section-title">Group 2 Pricing (Revenue)</h3>
                             <div class="space-y-2">
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
@@ -164,10 +176,104 @@
 
                         <!-- General Costs -->
                         <div>
-                            <h3 class="cost-section-title">General Costs</h3>
+                            <h3 class="cost-section-title">General Pricing</h3>
                             <div>
                                 <label class="text-xs font-semibold">Unique Model Maintenance (per year)</label>
                                 <input type="number" id="cost_maint_model_yr" value="30000" class="input-field text-sm" oninput="calculate()">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Internal Costs Config (Collapsible) -->
+                 <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                    <div class="flex justify-between items-center cursor-pointer" onclick="toggleInternalCosts()">
+                        <h2 class="text-lg font-semibold text-gray-700">4. Kaleidofin Unit Economics</h2>
+                        <span id="internal-toggle-icon">▼</span>
+                    </div>
+                    
+                    <div id="internal-config" class="hidden mt-4 space-y-6">
+                         <p class="text-xs text-gray-500 mb-2">Estimate the actual internal cost to deliver these services to calculate margin.</p>
+                         
+                        <!-- Group 1 Internal Costs -->
+                        <div>
+                            <h3 class="cost-section-title">Group 1 Actual Costs</h3>
+                            <div class="space-y-2">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-xs font-semibold">Integ Cost (First)</label>
+                                        <input type="number" id="int_g1_integ_first" value="45000" class="input-field text-sm" oninput="calculate()">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-semibold">Integ Cost (Sub)</label>
+                                        <input type="number" id="int_g1_integ_sub" value="30000" class="input-field text-sm" oninput="calculate()">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-xs font-semibold">Feat Eng Cost (First)</label>
+                                        <input type="number" id="int_g1_feat_first" value="20000" class="input-field text-sm" oninput="calculate()">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-semibold">Feat Eng Cost (Sub)</label>
+                                        <input type="number" id="int_g1_feat_sub" value="15000" class="input-field text-sm" oninput="calculate()">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold">Partner Maint Cost (per yr)</label>
+                                    <input type="number" id="int_g1_maint_yr" value="10000" class="input-field text-sm" oninput="calculate()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Group 2 Internal Costs -->
+                        <div>
+                            <h3 class="cost-section-title">Group 2 Actual Costs</h3>
+                            <div class="space-y-2">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-xs font-semibold">Integ Cost (First)</label>
+                                        <input type="number" id="int_g2_integ_first" value="45000" class="input-field text-sm" oninput="calculate()">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-semibold">Integ Cost (Sub)</label>
+                                        <input type="number" id="int_g2_integ_sub" value="30000" class="input-field text-sm" oninput="calculate()">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-xs font-semibold">Feat Eng Cost (First)</label>
+                                        <input type="number" id="int_g2_feat_first" value="20000" class="input-field text-sm" oninput="calculate()">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-semibold">Feat Eng Cost (Sub)</label>
+                                        <input type="number" id="int_g2_feat_sub" value="15000" class="input-field text-sm" oninput="calculate()">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-xs font-semibold">Model Calib Cost (First)</label>
+                                        <input type="number" id="int_g2_calib_first" value="80000" class="input-field text-sm" oninput="calculate()">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-semibold">Model Calib Cost (Sub)</label>
+                                        <input type="number" id="int_g2_calib_sub" value="35000" class="input-field text-sm" oninput="calculate()">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold">Partner Maint Cost (per yr)</label>
+                                    <input type="number" id="int_g2_maint_yr" value="10000" class="input-field text-sm" oninput="calculate()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- General Internal Costs -->
+                         <div>
+                            <h3 class="cost-section-title">General Actual Costs</h3>
+                            <div>
+                                <label class="text-xs font-semibold">Model Maint Cost (per yr)</label>
+                                <input type="number" id="int_maint_model_yr" value="20000" class="input-field text-sm" oninput="calculate()">
                             </div>
                         </div>
 
@@ -190,7 +296,7 @@
                         <p class="text-3xl font-bold text-green-600" id="net_grant_ask">$0</p>
                     </div>
                      <div class="result-card border-l-4 border-purple-500">
-                        <p class="text-sm font-medium text-gray-500">Gross Budget</p>
+                        <p class="text-sm font-medium text-gray-500">Gross Budget (Revenue)</p>
                         <p class="text-3xl font-bold text-purple-600" id="total_gross">$0</p>
                     </div>
                 </div>
@@ -198,7 +304,7 @@
                 <!-- Detailed Breakdown Table -->
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-bold text-gray-900">Budget Breakdown</h3>
+                        <h3 class="text-lg font-bold text-gray-900">Budget Breakdown (Grant View)</h3>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -229,8 +335,45 @@
                     </div>
                 </div>
 
+                 <!-- Kaleidofin Unit Economics Section -->
+                 <div class="bg-white rounded-lg shadow overflow-hidden mt-8 page-break">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h3 class="text-lg font-bold text-gray-900">Kaleidofin Unit Economics & Margin</h3>
+                        <p class="text-sm text-gray-500">Analysis of Revenue (Gross Budget) vs. Estimated Actual Delivery Costs</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group & Role</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Count</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Rev</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Cost</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Margin</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Margin</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Margin %</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="economics_body">
+                                <!-- Rows inserted by JS -->
+                            </tbody>
+                            <tfoot class="bg-gray-100 font-bold">
+                                <tr>
+                                    <td class="px-6 py-3">TOTAL</td>
+                                    <td class="px-6 py-3 text-right" id="ue_count">0</td>
+                                    <td class="px-6 py-3 text-right">-</td>
+                                    <td class="px-6 py-3 text-right">-</td>
+                                    <td class="px-6 py-3 text-right">-</td>
+                                    <td class="px-6 py-3 text-right text-blue-700" id="ue_total_margin">$0</td>
+                                    <td class="px-6 py-3 text-right" id="ue_margin_pct">0%</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Verification / Logic Section -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-6 no-print">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Verification & Logic "Behind the Scenes"</h3>
                     <div class="text-sm text-gray-600 space-y-2">
                         <p><strong>Formula Logic:</strong></p>
@@ -256,6 +399,11 @@
             el.classList.toggle('hidden');
         }
 
+        function toggleInternalCosts() {
+            const el = document.getElementById('internal-config');
+            el.classList.toggle('hidden');
+        }
+
         function fmt(num) {
             return '$' + num.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
         }
@@ -278,8 +426,8 @@
             const duration = getVal('duration');
             const maint_model_yr = getVal('cost_maint_model_yr');
 
-            // --- Group 1 Costs ---
-            const g1_costs = {
+            // --- Group 1 Costs (Revenue) ---
+            const g1_rev = {
                 integ_first: getVal('g1_cost_integ_first'),
                 integ_sub: getVal('g1_cost_integ_sub'),
                 feat_first: getVal('g1_cost_feat_first'),
@@ -288,8 +436,17 @@
                 copay: getVal('g1_copay')
             };
 
-            // --- Group 2 Costs ---
-            const g2_costs = {
+             // --- Group 1 Actual Costs (Internal) ---
+             const g1_cost = {
+                integ_first: getVal('int_g1_integ_first'),
+                integ_sub: getVal('int_g1_integ_sub'),
+                feat_first: getVal('int_g1_feat_first'),
+                feat_sub: getVal('int_g1_feat_sub'),
+                maint_yr: getVal('int_g1_maint_yr'),
+            };
+
+            // --- Group 2 Costs (Revenue) ---
+            const g2_rev = {
                 integ_first: getVal('g2_cost_integ_first'),
                 integ_sub: getVal('g2_cost_integ_sub'),
                 feat_first: getVal('g2_cost_feat_first'),
@@ -300,44 +457,62 @@
                 copay: getVal('g2_copay')
             };
 
-            const g1_maint_total = g1_costs.maint_yr * duration;
-            const g2_maint_total = g2_costs.maint_yr * duration;
+             // --- Group 2 Actual Costs (Internal) ---
+             const g2_cost = {
+                integ_first: getVal('int_g2_integ_first'),
+                integ_sub: getVal('int_g2_integ_sub'),
+                feat_first: getVal('int_g2_feat_first'),
+                feat_sub: getVal('int_g2_feat_sub'),
+                calib_first: getVal('int_g2_calib_first'),
+                calib_sub: getVal('int_g2_calib_sub'),
+                maint_yr: getVal('int_g2_maint_yr'),
+            };
 
-            // Define Unit Gross Calculations
-            
-            // G1: Integ + Feat + Maint
-            const unit_g1_first = g1_costs.integ_first + g1_costs.feat_first + g1_maint_total;
-            const unit_g1_sub = g1_costs.integ_sub + g1_costs.feat_sub + g1_maint_total;
+            // General Internal
+            const int_maint_model_yr = getVal('int_maint_model_yr');
 
-            // G2: Integ + Feat + Calib + Maint
-            const unit_g2_first = g2_costs.integ_first + g2_costs.feat_first + g2_costs.calib_first + g2_maint_total;
+            // --- Calculations ---
+
+            const g1_maint_total = g1_rev.maint_yr * duration;
+            const g2_maint_total = g2_rev.maint_yr * duration;
             
-            // G2 Hybrid: 
-            // Logic: Uses G2 Subsequent Integration/Feature Rates (since market is open) 
-            // but G2 First Calibration (since model is new).
-            // (Assuming "Group 2 costs" apply to Group 2 partners, even if in G1 market)
-            const unit_g2_hybrid = g2_costs.integ_sub + g2_costs.feat_sub + g2_costs.calib_first + g2_maint_total;
-            
-            const unit_g2_sub = g2_costs.integ_sub + g2_costs.feat_sub + g2_costs.calib_sub + g2_maint_total;
+            const g1_int_maint_total = g1_cost.maint_yr * duration;
+            const g2_int_maint_total = g2_cost.maint_yr * duration;
+
+            // Unit Revenue (Gross Budget)
+            const unit_rev_g1_first = g1_rev.integ_first + g1_rev.feat_first + g1_maint_total;
+            const unit_rev_g1_sub = g1_rev.integ_sub + g1_rev.feat_sub + g1_maint_total;
+            const unit_rev_g2_first = g2_rev.integ_first + g2_rev.feat_first + g2_rev.calib_first + g2_maint_total;
+            const unit_rev_g2_hybrid = g2_rev.integ_sub + g2_rev.feat_sub + g2_rev.calib_first + g2_maint_total;
+            const unit_rev_g2_sub = g2_rev.integ_sub + g2_rev.feat_sub + g2_rev.calib_sub + g2_maint_total;
+
+            // Unit Internal Cost
+            const unit_cost_g1_first = g1_cost.integ_first + g1_cost.feat_first + g1_int_maint_total;
+            const unit_cost_g1_sub = g1_cost.integ_sub + g1_cost.feat_sub + g1_int_maint_total;
+            const unit_cost_g2_first = g2_cost.integ_first + g2_cost.feat_first + g2_cost.calib_first + g2_int_maint_total;
+            const unit_cost_g2_hybrid = g2_cost.integ_sub + g2_cost.feat_sub + g2_cost.calib_first + g2_int_maint_total;
+            const unit_cost_g2_sub = g2_cost.integ_sub + g2_cost.feat_sub + g2_cost.calib_sub + g2_int_maint_total;
 
             // Rows Data
             const rows = [
-                { name: "Group 1: First", count: counts.g1_first, unit: unit_g1_first, copay: g1_costs.copay },
-                { name: "Group 1: Subsequent", count: counts.g1_sub, unit: unit_g1_sub, copay: g1_costs.copay },
-                { name: "Group 2: First", count: counts.g2_first, unit: unit_g2_first, copay: g2_costs.copay },
-                { name: "Group 2: Hybrid", count: counts.g2_hybrid, unit: unit_g2_hybrid, copay: g2_costs.copay },
-                { name: "Group 2: Subsequent", count: counts.g2_sub, unit: unit_g2_sub, copay: g2_costs.copay },
+                { name: "Group 1: First", count: counts.g1_first, unit: unit_rev_g1_first, copay: g1_rev.copay, int_unit: unit_cost_g1_first },
+                { name: "Group 1: Subsequent", count: counts.g1_sub, unit: unit_rev_g1_sub, copay: g1_rev.copay, int_unit: unit_cost_g1_sub },
+                { name: "Group 2: First", count: counts.g2_first, unit: unit_rev_g2_first, copay: g2_rev.copay, int_unit: unit_cost_g2_first },
+                { name: "Group 2: Hybrid", count: counts.g2_hybrid, unit: unit_rev_g2_hybrid, copay: g2_rev.copay, int_unit: unit_cost_g2_hybrid },
+                { name: "Group 2: Subsequent", count: counts.g2_sub, unit: unit_rev_g2_sub, copay: g2_rev.copay, int_unit: unit_cost_g2_sub },
             ];
 
-            // Add Model Maintenance Row
-            const model_maint_total = models * maint_model_yr * duration;
+            // Model Maintenance Totals
+            const model_maint_rev_total = models * maint_model_yr * duration;
+            const model_maint_cost_total = models * int_maint_model_yr * duration;
+
+            // --- Render Budget Table ---
             
             let total_count = 0;
             let total_gross = 0;
             let total_copay = 0;
             let total_net = 0;
-
-            let html = "";
+            let budget_html = "";
 
             rows.forEach(r => {
                 const row_gross = r.count * r.unit;
@@ -349,7 +524,7 @@
                 total_copay += row_copay;
                 total_net += row_net;
 
-                html += `<tr>
+                budget_html += `<tr>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${r.name}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${r.count}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${fmt(r.unit)}</td>
@@ -359,44 +534,92 @@
                 </tr>`;
             });
 
-            // Model Maintenance Row
-            html += `<tr class="bg-yellow-50">
+             // Model Maintenance Row (Budget)
+             budget_html += `<tr class="bg-yellow-50">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Model Maintenance (${models} Models)</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${models}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${fmt(maint_model_yr * duration)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">${fmt(model_maint_total)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">${fmt(model_maint_rev_total)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500 text-right">($0)</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 text-right font-bold">${fmt(model_maint_total)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 text-right font-bold">${fmt(model_maint_rev_total)}</td>
             </tr>`;
 
-            total_gross += model_maint_total;
-            total_net += model_maint_total;
+            total_gross += model_maint_rev_total;
+            total_net += model_maint_rev_total;
 
-            document.getElementById('breakdown_body').innerHTML = html;
-
-            // Update Footer
-            document.getElementById('ft_count').innerText = total_count; // Don't add models to partner count
+            document.getElementById('breakdown_body').innerHTML = budget_html;
+            document.getElementById('ft_count').innerText = total_count;
             document.getElementById('ft_gross').innerText = fmt(total_gross);
             document.getElementById('ft_copay').innerText = '(' + fmt(total_copay) + ')';
             document.getElementById('ft_net').innerText = fmt(total_net);
 
-            // Update Cards
             document.getElementById('total_partners').innerText = total_count;
             document.getElementById('total_gross').innerText = fmt(total_gross);
             document.getElementById('net_grant_ask').innerText = fmt(total_net);
 
-            // Update Logic Explanations
-            document.getElementById('logic_g1_first').innerText = `G1 First Integ (${fmt(g1_costs.integ_first)}) + G1 First Feat (${fmt(g1_costs.feat_first)}) + G1 Partner Maint (${fmt(g1_maint_total)}) = ${fmt(unit_g1_first)}`;
+
+            // --- Render Economics Table ---
             
-            document.getElementById('logic_g1_sub').innerText = `G1 Sub Integ (${fmt(g1_costs.integ_sub)}) + G1 Sub Feat (${fmt(g1_costs.feat_sub)}) + G1 Partner Maint (${fmt(g1_maint_total)}) = ${fmt(unit_g1_sub)}`;
+            let econ_html = "";
+            let total_cost = 0;
+            let total_margin = 0;
+
+            rows.forEach(r => {
+                const row_rev = r.count * r.unit;
+                const row_cost = r.count * r.int_unit;
+                const row_margin = row_rev - row_cost;
+                const unit_margin = r.unit - r.int_unit;
+                const margin_pct = r.unit > 0 ? (unit_margin / r.unit * 100).toFixed(1) + '%' : '0%';
+
+                total_cost += row_cost;
+                total_margin += row_margin;
+
+                econ_html += `<tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${r.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${r.count}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${fmt(r.unit)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${fmt(r.int_unit)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${fmt(unit_margin)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-700 text-right font-medium">${fmt(row_margin)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${margin_pct}</td>
+                </tr>`;
+            });
+
+             // Model Maintenance Row (Economics)
+             const model_margin = model_maint_rev_total - model_maint_cost_total;
+             const model_margin_pct = model_maint_rev_total > 0 ? (model_margin / model_maint_rev_total * 100).toFixed(1) + '%' : '0%';
+
+             econ_html += `<tr class="bg-yellow-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Model Maintenance (${models} Models)</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${models}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${fmt(maint_model_yr * duration)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${fmt(int_maint_model_yr * duration)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${fmt((maint_model_yr * duration) - (int_maint_model_yr * duration))}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-700 text-right font-medium">${fmt(model_margin)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${model_margin_pct}</td>
+            </tr>`;
+
+            total_cost += model_maint_cost_total;
+            total_margin += model_margin;
+            const total_margin_pct = total_gross > 0 ? (total_margin / total_gross * 100).toFixed(1) + '%' : '0%';
+
+            document.getElementById('economics_body').innerHTML = econ_html;
+            document.getElementById('ue_count').innerText = total_count;
+            document.getElementById('ue_total_margin').innerText = fmt(total_margin);
+            document.getElementById('ue_margin_pct').innerText = total_margin_pct;
+
+            // Logic explanations update
+            document.getElementById('logic_g1_first').innerText = `G1 First Integ (${fmt(g1_rev.integ_first)}) + G1 First Feat (${fmt(g1_rev.feat_first)}) + G1 Partner Maint (${fmt(g1_maint_total)}) = ${fmt(unit_rev_g1_first)}`;
             
-            document.getElementById('logic_g2_first').innerText = `G2 First Integ (${fmt(g2_costs.integ_first)}) + G2 First Feat (${fmt(g2_costs.feat_first)}) + G2 First Calib (${fmt(g2_costs.calib_first)}) + G2 Partner Maint (${fmt(g2_maint_total)}) = ${fmt(unit_g2_first)}`;
+            document.getElementById('logic_g1_sub').innerText = `G1 Sub Integ (${fmt(g1_rev.integ_sub)}) + G1 Sub Feat (${fmt(g1_rev.feat_sub)}) + G1 Partner Maint (${fmt(g1_maint_total)}) = ${fmt(unit_rev_g1_sub)}`;
             
-            document.getElementById('logic_g2_hybrid').innerText = `G2 Sub Integ (${fmt(g2_costs.integ_sub)}) + G2 Sub Feat (${fmt(g2_costs.feat_sub)}) + G2 First Calib (${fmt(g2_costs.calib_first)}) + G2 Partner Maint (${fmt(g2_maint_total)}) = ${fmt(unit_g2_hybrid)}`;
+            document.getElementById('logic_g2_first').innerText = `G2 First Integ (${fmt(g2_rev.integ_first)}) + G2 First Feat (${fmt(g2_rev.feat_first)}) + G2 First Calib (${fmt(g2_rev.calib_first)}) + G2 Partner Maint (${fmt(g2_maint_total)}) = ${fmt(unit_rev_g2_first)}`;
             
-            document.getElementById('logic_g2_sub').innerText = `G2 Sub Integ (${fmt(g2_costs.integ_sub)}) + G2 Sub Feat (${fmt(g2_costs.feat_sub)}) + G2 Sub Calib (${fmt(g2_costs.calib_sub)}) + G2 Partner Maint (${fmt(g2_maint_total)}) = ${fmt(unit_g2_sub)}`;
+            document.getElementById('logic_g2_hybrid').innerText = `G2 Sub Integ (${fmt(g2_rev.integ_sub)}) + G2 Sub Feat (${fmt(g2_rev.feat_sub)}) + G2 First Calib (${fmt(g2_rev.calib_first)}) + G2 Partner Maint (${fmt(g2_maint_total)}) = ${fmt(unit_rev_g2_hybrid)}`;
             
-            document.getElementById('logic_models').innerText = `${models} Models × ${fmt(maint_model_yr)}/yr × ${duration} years = ${fmt(model_maint_total)}`;
+            document.getElementById('logic_g2_sub').innerText = `G2 Sub Integ (${fmt(g2_rev.integ_sub)}) + G2 Sub Feat (${fmt(g2_rev.feat_sub)}) + G2 Sub Calib (${fmt(g2_rev.calib_sub)}) + G2 Partner Maint (${fmt(g2_maint_total)}) = ${fmt(unit_rev_g2_sub)}`;
+            
+            document.getElementById('logic_models').innerText = `${models} Models × ${fmt(maint_model_yr)}/yr × ${duration} years = ${fmt(model_maint_rev_total)}`;
         }
 
         // Init
