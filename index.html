@@ -30,9 +30,14 @@
                 <h1 class="text-3xl font-bold text-gray-900">Financial Model: WEE Fund Budget Simulator</h1>
                 <p class="text-gray-600 mt-2">Simulate scenarios by adjusting partner counts, cost structures, and assumptions.</p>
             </div>
-            <button onclick="window.print()" class="no-print bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 font-medium text-sm">
-                Print Report
-            </button>
+            <div class="flex space-x-2 no-print">
+                <button id="save-btn" onclick="saveDefaults()" class="bg-gray-600 text-white px-4 py-2 rounded shadow hover:bg-gray-700 font-medium text-sm">
+                    Set as Default
+                </button>
+                <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 font-medium text-sm">
+                    Print Report
+                </button>
+            </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -625,8 +630,55 @@
             document.getElementById('logic_models').innerText = `${models} Models × ${fmt(maint_model_yr)}/yr × ${duration} years = ${fmt(model_maint_rev_total)}`;
         }
 
+        function saveDefaults() {
+            // Get all input values
+            const inputs = document.querySelectorAll('input[type="number"]');
+            const defaults = {};
+            inputs.forEach(input => {
+                defaults[input.id] = input.value;
+            });
+            
+            // Save to local storage
+            localStorage.setItem('budget_simulator_defaults', JSON.stringify(defaults));
+            
+            // Show feedback
+            const btn = document.getElementById('save-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "Saved!";
+            btn.classList.add('bg-green-600', 'hover:bg-green-700');
+            btn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+            
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+            }, 2000);
+        }
+
+        function loadDefaults() {
+            const stored = localStorage.getItem('budget_simulator_defaults');
+            if (stored) {
+                const defaults = JSON.parse(stored);
+                for (const [id, value] of Object.entries(defaults)) {
+                    const el = document.getElementById(id);
+                    if (el) el.value = value;
+                }
+            } else {
+                // Set requested hardcoded defaults if no local storage exists
+                // 8 Group 1 First, 26 Group 1 Subsequent
+                const g1_first = document.getElementById('count_g1_first');
+                const g1_sub = document.getElementById('count_g1_sub');
+                
+                if(g1_first) g1_first.value = 8;
+                if(g1_sub) g1_sub.value = 26;
+            }
+            calculate();
+        }
+
         // Init
-        calculate();
+        loadDefaults(); // Load defaults instead of just calculate
+        // calculate(); // Called by loadDefaults
+
     </script>
 </body>
 </html>
